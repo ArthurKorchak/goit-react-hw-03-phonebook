@@ -7,33 +7,35 @@ import s from './App.module.css';
 
 class App extends Component {
   state = {
-    contacts: [
-      {id: 'id-1', name: 'Rosie Simpson', number: '459-12-56'},
-      {id: 'id-2', name: 'Hermione Kline', number: '443-89-12'},
-      {id: 'id-3', name: 'Eden Clements', number: '645-17-79'},
-      {id: 'id-4', name: 'Annie Copeland', number: '227-91-26'},
-    ],
+    contacts: [],
     filter: '',
+  };
+
+  componentDidMount = () => {
+    const currentLS = localStorage.getItem('contactsList')
+    if (currentLS) {
+      this.setState({contacts: JSON.parse(currentLS)});
+    }
   };
 
   addContact = (name, number) => {
     if (this.state.contacts.reduce((acc, item) => [...acc, item.name], []).includes(name)) {
       alert(`${name} is already in contacts`);
     } else {
-      this.setState(prevState => {
-        return {contacts: [...prevState.contacts, { id: nanoid(), name: name, number: number }]};
-      });
+      const currentContacts = [...this.state.contacts, { id: nanoid(), name: name, number: number }]
+      localStorage.setItem('contactsList', JSON.stringify(currentContacts));
+      this.setState({contacts: currentContacts});
     };
+  };
+
+  deleteContact = (event) => {
+    const currentContacts = [...this.state.contacts].filter(item => item.id !== event.target.name);
+    localStorage.setItem('contactsList', JSON.stringify(currentContacts));
+    this.setState({contacts: currentContacts});
   };
 
   filterOperator = (event) => {
     this.setState({filter: event.target.value.toLowerCase()});
-  };
-
-  deleteContact = (event) => {
-    this.setState(prevState => {
-        return {contacts: prevState.contacts.filter(item => item.id !== event.target.name)};
-      });
   };
 
   render() {
