@@ -11,11 +11,17 @@ class App extends Component {
     filter: '',
   };
 
-  componentDidMount = () => {
+  componentDidMount() {
     const currentLS = localStorage.getItem('contactsList')
     if (currentLS) {
       this.setState({contacts: JSON.parse(currentLS)});
     }
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contactsList', JSON.stringify(this.state.contacts));
+    };
   };
 
   addContact = (name, number) => {
@@ -23,14 +29,12 @@ class App extends Component {
       alert(`${name} is already in contacts`);
     } else {
       const currentContacts = [...this.state.contacts, { id: nanoid(), name: name, number: number }]
-      localStorage.setItem('contactsList', JSON.stringify(currentContacts));
       this.setState({contacts: currentContacts});
     };
   };
 
   deleteContact = (event) => {
     const currentContacts = [...this.state.contacts].filter(item => item.id !== event.target.name);
-    localStorage.setItem('contactsList', JSON.stringify(currentContacts));
     this.setState({contacts: currentContacts});
   };
 
